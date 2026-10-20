@@ -461,7 +461,7 @@ services:
       RULES_FILE: "/app/rules/fingerprints.json"
     ports:
       - "127.0.0.1:8080:8080"
-    networks: [fingerprint]
+    networks: [ingress, fingerprint]
     user: "65532:65532"
     read_only: true
     cap_drop: [ALL]
@@ -504,6 +504,8 @@ services:
     pids_limit: 64
 
 networks:
+  ingress:
+    driver: bridge
   fingerprint:
     driver: bridge
     internal: true
@@ -513,7 +515,9 @@ server 在容器内监听 `:8080`，client 使用 `http://server:8080`。宿主�
 
 `service_healthy` 等待真实健康状态；client 成功退出后 server 继续运行。服务启动后的 unhealthy 状态不会单凭 `depends_on` 自动重新执行 client。参见 [Compose 启动依赖](https://docs.docker.com/compose/how-tos/startup-order/)。
 
-内部网络限制容器的外部连通性，容器间使用服务名解析。镜像拉取和构建依赖下载属于构建阶段，需在 README 单独说明网络前提。网络行为参见 [Compose 网络文档](https://docs.docker.com/compose/how-tos/networking/)。
+client 只加入内部 fingerprint 网络，容器间使用服务名解析。server 额外加入专用 ingress 网络以支持实际的宿主机端口发布，宿主机入口仍限制为 `127.0.0.1`。这一配置已根据首次 Docker 验收中的端口发布行为调整：仅有内部网络时，容器之间调用成功，但该环境没有生成宿主机端口映射。
+
+镜像拉取和构建依赖下载属于构建阶段，需在 README 单独说明网络前提。网络行为参见 [Compose 网络文档](https://docs.docker.com/compose/how-tos/networking/)。
 
 ### 11.3 启动与排查
 

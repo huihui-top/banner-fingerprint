@@ -177,12 +177,20 @@ def compose():
         assert all(not x["RW"] for x in info["Mounts"])
     info = json.loads(capture(["docker", "inspect", server_id]))[0]
     assert info["State"]["Health"]["Status"] == "healthy"
-    bindings = info["HostConfig"]["PortBindings"]["8080/tcp"]
+    # Check effective runtime bindings, not merely the requested HostConfig.
+    bindings = info["NetworkSettings"]["Ports"]["8080/tcp"]
     assert bindings == [{"HostIp": "127.0.0.1", "HostPort": "8080"}], bindings
     networks = info["NetworkSettings"]["Networks"]
-    assert len(networks) == 1
-    network = json.loads(capture(["docker", "network", "inspect", next(iter(networks))]))[0]
-    assert network["Internal"]
+    assert len(networks) == 2
+    client_info = json.loads(capture(["docker", "inspect", client_id]))[0]
+    # Network names remain in the one-off client's configuration after exit.
+    client_networks = client_info["NetworkSettings"]["Networks"]
+    assert len(client_networks) == 1
+    private_name = next(iter(client_networks))
+    assert private_name in networks
+    for name in networks:
+        network = json.loads(capture(["docker", "network", "inspect", name]))[0]
+        assert network["Internal"] == (name == private_name)
     logs = capture(["docker", "compose", "logs", "--no-color", "server"])
     assert mixed_id in logs and '"code":"invalid_port"' in logs
     # Explicitly verify SIGTERM reaches PID 1 and graceful shutdown completes.

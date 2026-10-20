@@ -218,7 +218,7 @@ client 的文件和响应大小上限均为 16 MiB，请求超时默认 30s，�
 
 - 同一 Dockerfile 使用 Go 构建阶段和两个 scratch 运行目标，编译时 `CGO_ENABLED=0`、`-trimpath`，运行镜像只保留对应二进制及必要规则。
 - server 在容器内监听 `:8080`；仅发布宿主机 `127.0.0.1:8080`。client 不发布端口。
-- 使用单个 `internal: true` bridge 网络，以服务名通信，运行时无需外网。
+- client 只加入 `internal: true` 的 fingerprint 网络，以服务名访问 server。server 另接专用 ingress bridge，使 Docker 能实际发布本机端口；宿主机入口仍只绑定 `127.0.0.1`。
 - 两个容器均以 `65532:65532` 运行，只读根文件系统、只读数据挂载，移除 capabilities，禁止权限提升。
 - 内置 `server healthcheck` 使用 Go HTTP 客户端，scratch 中无需安装 shell 或 curl。
 - client 依赖 `service_healthy`，作为一次性任务退出，`restart: "no"`。server 进程异常有限次重启；unhealthy 标记本身不会触发自动重启。
