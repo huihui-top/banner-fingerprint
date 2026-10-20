@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: false
+      - name: Format and static checks
+        run: |
+          test -z "$(gofmt -l cmd internal)"
+          go vet ./...
+      - name: Tests and race detector
+        run: go test -race ./...
+      - name: Build standalone programs
+        run: |
+          go build -o bin/server ./cmd/server
+          go build -o bin/client ./cmd/client
+      - name: Actual server and client
+        run: python3 scripts/smoke.py --mode local
+
+  compose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build images and run complete Compose acceptance
+        run: python3 scripts/smoke.py --mode compose
+      - name: Container diagnostics
+        if: always()
+        run: |
+          docker compose ps -a
+          docker compose logs --no-color
+      - name: Stop project
+        if: always()
+        run: docker compose down --remove-orphans

@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "rules": [
+    {
+      "id": "ssh.openssh.version", "protocol": "SSH", "kind": "product",
+      "source": "ssh.identification",
+      "match": {"type": "regex", "pattern": "^SSH-(?:2\\.0|1\\.99)-OpenSSH_(?P<version>[0-9]+(?:\\.[0-9]+)*(?:p[0-9]+)?)(?:[\\s_-]|$)"},
+      "product": "OpenSSH", "version_group": "version", "priority": 100, "confidence": 0.95,
+      "os_hints": [
+        {"pattern": "(?i)\\bUbuntu\\b", "value": "Ubuntu"},
+        {"pattern": "(?i)\\bDebian\\b", "value": "Debian"},
+        {"pattern": "(?i)\\bFreeBSD\\b", "value": "FreeBSD"},
+        {"pattern": "(?i)\\bOpenBSD\\b", "value": "OpenBSD"}
+      ]
+    },
+    {
+      "id": "http.nginx.version", "protocol": "HTTP", "kind": "product", "source": "http.server",
+      "match": {"type": "regex", "pattern": "(?i)^nginx/(?P<version>[0-9]+(?:\\.[0-9]+)+(?:[-+][A-Za-z0-9._-]+)?)(?:\\s|$)"},
+      "product": "nginx", "version_group": "version", "priority": 100, "confidence": 0.9,
+      "os_hints": [{"pattern": "(?i)\\bUbuntu\\b", "value": "Ubuntu"}, {"pattern": "(?i)\\bDebian\\b", "value": "Debian"}]
+    },
+    {
+      "id": "http.apache.version", "protocol": "HTTP", "kind": "product", "source": "http.server",
+      "match": {"type": "regex", "pattern": "(?i)^Apache/(?P<version>[0-9]+(?:\\.[0-9]+)+(?:[-+][A-Za-z0-9._-]+)?)(?:\\s|$)"},
+      "product": "Apache", "version_group": "version", "priority": 100, "confidence": 0.9,
+      "os_hints": [{"pattern": "(?i)\\bUbuntu\\b", "value": "Ubuntu"}, {"pattern": "(?i)\\bDebian\\b", "value": "Debian"}, {"pattern": "(?i)\\bWin(?:32|64)\\b", "value": "Windows"}]
+    },
+    {
+      "id": "http.jetty.version", "protocol": "HTTP", "kind": "product", "source": "http.server",
+      "match": {"type": "regex", "pattern": "(?i)^Jetty[/(](?P<version>[0-9]+(?:\\.[0-9]+)+(?:\\.[A-Za-z][A-Za-z0-9._-]*)?)(?:[)\\s]|$)"},
+      "product": "Jetty", "version_group": "version", "priority": 100, "confidence": 0.85
+    },
+    {
+      "id": "http.iis.version", "protocol": "HTTP", "kind": "product", "source": "http.server",
+      "match": {"type": "regex", "pattern": "(?i)^Microsoft-IIS/(?P<version>[0-9]+(?:\\.[0-9]+)+)(?:\\s|$)"},
+      "product": "Microsoft-IIS", "version_group": "version", "priority": 100, "confidence": 0.9
+    },
+    {
+      "id": "mysql.handshake.version", "protocol": "MySQL", "kind": "product", "source": "mysql.server_version",
+      "match": {"type": "regex", "pattern": "^(?P<version>[0-9]+\\.[0-9]+(?:\\.[0-9]+)?[A-Za-z0-9._+~:-]*)$"},
+      "product": "MySQL", "version_group": "version", "priority": 100, "confidence": 0.9
+    },
+    {
+      "id": "redis.pong", "protocol": "Redis", "kind": "product", "source": "redis.response",
+      "match": {"type": "exact", "pattern": "+PONG"},
+      "product": "Redis", "priority": 100, "confidence": 0.7
+    },
+    {
+      "id": "redis.noauth", "protocol": "Redis", "kind": "product", "source": "redis.response",
+      "match": {"type": "regex", "pattern": "^-NOAUTH Authentication required\\.?$"},
+      "product": "Redis", "priority": 100, "confidence": 0.7
+    },
+    {
+      "id": "redis.arguments", "protocol": "Redis", "kind": "product", "source": "redis.response",
+      "match": {"type": "regex", "pattern": "^-ERR wrong number of arguments for '[A-Za-z][A-Za-z0-9_.| -]*' command$"},
+      "product": "Redis", "priority": 100, "confidence": 0.7
+    },
+    {
+      "id": "ftp.proftpd.version", "protocol": "FTP", "kind": "product", "source": "ftp.greeting",
+      "match": {"type": "regex", "pattern": "(?i)\\bProFTPD[ /](?P<version>[0-9]+(?:\\.[0-9]+)+[A-Za-z0-9._+-]*)(?:[\\s)]|$)"},
+      "product": "ProFTPD", "version_group": "version", "priority": 100, "confidence": 0.9
+    },
+    {
+      "id": "ftp.vsftpd.version", "protocol": "FTP", "kind": "product", "source": "ftp.greeting",
+      "match": {"type": "regex", "pattern": "(?i)\\bvsFTPd[ /](?P<version>[0-9]+(?:\\.[0-9]+)+)(?:[\\s)]|$)"},
+      "product": "vsFTPd", "version_group": "version", "priority": 100, "confidence": 0.9
+    },
+    {
+      "id": "ftp.pureftpd.version", "protocol": "FTP", "kind": "product", "source": "ftp.greeting",
+      "match": {"type": "regex", "pattern": "(?i)\\bPure-FTPd[ /](?P<version>[0-9]+(?:\\.[0-9]+)+)(?:[\\s)]|$)"},
+      "product": "Pure-FTPd", "version_group": "version", "priority": 100, "confidence": 0.9
+    },
+    {
+      "id": "ftp.pureftpd", "protocol": "FTP", "kind": "product", "source": "ftp.greeting",
+      "match": {"type": "regex", "pattern": "(?i)\\bPure-FTPd\\b"},
+      "product": "Pure-FTPd", "priority": 50, "confidence": 0.8
+    },
+    {
+      "id": "ftp.proftpd", "protocol": "FTP", "kind": "product", "source": "ftp.greeting",
+      "match": {"type": "regex", "pattern": "(?i)\\bProFTPD\\b"},
+      "product": "ProFTPD", "priority": 50, "confidence": 0.8
+    },
+    {
+      "id": "ftp.vsftpd", "protocol": "FTP", "kind": "product", "source": "ftp.greeting",
+      "match": {"type": "regex", "pattern": "(?i)\\bvsFTPd\\b"},
+      "product": "vsFTPd", "priority": 50, "confidence": 0.8
+    },
+    {
+      "id": "http.nginx", "protocol": "HTTP", "kind": "product", "source": "http.server",
+      "match": {"type": "regex", "pattern": "(?i)^nginx(?:\\s|$)"},
+      "product": "nginx", "priority": 50, "confidence": 0.8,
+      "os_hints": [{"pattern": "(?i)\\bUbuntu\\b", "value": "Ubuntu"}, {"pattern": "(?i)\\bDebian\\b", "value": "Debian"}]
+    },
+    {
+      "id": "http.apache", "protocol": "HTTP", "kind": "product", "source": "http.server",
+      "match": {"type": "regex", "pattern": "(?i)^Apache(?:\\s|$)"},
+      "product": "Apache", "priority": 50, "confidence": 0.8,
+      "os_hints": [{"pattern": "(?i)\\bUbuntu\\b", "value": "Ubuntu"}, {"pattern": "(?i)\\bDebian\\b", "value": "Debian"}]
+    },
+    {
+      "id": "http.jetty", "protocol": "HTTP", "kind": "product", "source": "http.server",
+      "match": {"type": "regex", "pattern": "(?i)^Jetty(?:\\s|$)"},
+      "product": "Jetty", "priority": 50, "confidence": 0.8
+    },
+    {
+      "id": "http.iis", "protocol": "HTTP", "kind": "product", "source": "http.server",
+      "match": {"type": "regex", "pattern": "(?i)^Microsoft-IIS(?:\\s|$)"},
+      "product": "Microsoft-IIS", "priority": 50, "confidence": 0.8
+    },
+    {
+      "id": "ssh.openssh", "protocol": "SSH", "kind": "product", "source": "ssh.identification",
+      "match": {"type": "regex", "pattern": "^SSH-(?:2\\.0|1\\.99)-OpenSSH(?:\\s|$)"},
+      "product": "OpenSSH", "priority": 50, "confidence": 0.8
+    },
+    {
+      "id": "http.generic", "protocol": "HTTP", "kind": "protocol", "source": "http.protocol",
+      "match": {"type": "exact", "pattern": "HTTP"},
+      "product": "", "priority": 0, "confidence": 0.6
+    },
+    {
+      "id": "ssh.generic", "protocol": "SSH", "kind": "protocol", "source": "ssh.protocol",
+      "match": {"type": "exact", "pattern": "SSH"},
+      "product": "", "priority": 0, "confidence": 0.6
+    }
+  ]
+}

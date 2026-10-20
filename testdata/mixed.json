@@ -1,0 +1,8 @@
+[
+  {"ip":"127.0.0.1","port":2222,"banner":"SSH-2.0-OpenSSH_9.9p2 Debian-1"},
+  {"ip":"127.0.0.2","port":"80","banner":"HTTP/1.1 200 OK\r\nServer: nginx/1.28.0"},
+  null,
+  {"ip":"127.0.0.3","port":80},
+  {"ip":"127.0.0.4","port":22,"banner":"QUIT\r\n"},
+  {"ip":"::1","port":54321,"banner":"HTTP/1.1 404 Not Found\r\nsErVeR: Jetty(12.0.8)"}
+]
