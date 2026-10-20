@@ -526,10 +526,10 @@ client 只加入内部 fingerprint 网络，容器间使用服务名解析。ser
 docker compose up
 
 # server 已运行时，再次执行默认 client
-docker compose run --rm client
+docker compose run --rm --no-deps client
 
 # 将新数据放到 samples/acceptance.json 后执行
-docker compose run --rm client --server http://server:8080 --input /data/acceptance.json
+docker compose run --rm --no-deps client --server http://server:8080 --input /data/acceptance.json
 
 # 查看容器状态和内部错误
 docker compose ps -a
@@ -542,7 +542,7 @@ curl -i http://127.0.0.1:8080/health
 curl -H "Content-Type: application/json" --data-binary @samples/input.json http://127.0.0.1:8080/fingerprint
 ```
 
-源码修改后使用 `docker compose up --build`。规则只读挂载时，修改规则后重启 server 生效。PowerShell 环境可用 `curl.exe` 执行上述 curl 示例。默认运行不使用 `--abort-on-container-exit`，避免 client 完成后把 server 一并停止。
+源码修改后使用 `docker compose up --build`。规则只读挂载时，修改规则后重启 server 生效。重复调用中的 `--no-deps` 用于复用已健康的 server，避免重新创建依赖容器。PowerShell 环境可用 `curl.exe` 执行上述 curl 示例。默认运行不使用 `--abort-on-container-exit`，避免 client 完成后把 server 一并停止。
 
 ## 12 自测与验收
 

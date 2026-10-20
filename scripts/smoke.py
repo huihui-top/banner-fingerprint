@@ -165,7 +165,8 @@ def compose():
             break
         assert time.monotonic() < until, "default Compose client did not exit"
         time.sleep(0.2)
-    output = capture(["docker", "compose", "run", "--rm", "-T", "client"])
+    # The dependency is already healthy; do not let compose run recreate it.
+    output = capture(["docker", "compose", "run", "--rm", "--no-deps", "-T", "client"])
     assert results(output, 20) == expected
     for container_id in (server_id, client_id):
         info = json.loads(capture(["docker", "inspect", container_id]))[0]

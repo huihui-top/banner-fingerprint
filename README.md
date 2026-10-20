@@ -23,10 +23,10 @@ Compose 构建两个运行镜像，启动 server，等待 `/health` 通过后运
 docker compose ps -a
 
 # 再次运行默认样例
-docker compose run --rm client
+docker compose run --rm --no-deps client
 
 # 将自测文件放在 samples/acceptance.json 后执行
-docker compose run --rm client --server http://server:8080 --input /data/acceptance.json
+docker compose run --rm --no-deps client --server http://server:8080 --input /data/acceptance.json
 
 # 查看服务端内部错误
 docker compose logs server
@@ -35,7 +35,7 @@ docker compose logs server
 docker compose down
 ```
 
-client 容器里的 `server` 是 Compose 服务名；宿主机程序使用 `127.0.0.1`。不要给默认启动命令加 `--abort-on-container-exit`，否则一次性 client 完成会停止 server。
+client 容器里的 `server` 是 Compose 服务名；宿主机程序使用 `127.0.0.1`。重复调用时，`--no-deps` 复用已启动且健康的 server，避免 Compose 重建依赖容器。不要给默认启动命令加 `--abort-on-container-exit`，否则一次性 client 完成会停止 server。
 
 ## 接口
 
@@ -154,7 +154,7 @@ MySQL 自测包声明的长度超过实际片段长度；协议标识和版本�
 
 ```bash
 docker compose restart server
-docker compose run --rm client
+docker compose run --rm --no-deps client
 ```
 
 规则启动时校验 ID、协议/source、正则、捕获组和分数。坏规则不会被静默忽略；加载失败直接退出。置信度为公开的规则评分，unknown 固定为 0。
